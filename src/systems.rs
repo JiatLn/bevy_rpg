@@ -1,5 +1,5 @@
-use crate::{components::Pickupable, resources::Graphics, utils::index_to_rect};
-use bevy::prelude::*;
+use crate::{inventory::Item, resources::Graphics, utils::index_to_rect};
+use bevy::{prelude::*, utils::HashMap};
 
 pub fn load_graphics(
     mut commands: Commands,
@@ -18,31 +18,21 @@ pub fn load_graphics(
 
     let mut altas = TextureAtlas::from_grid(image_handle, Vec2::splat(16.0), 12, 11, None, None);
 
-    let flint_index = altas.add_texture(index_to_rect(7, 9, 16.0));
+    let arrow_index = altas.add_texture(index_to_rect(9, 11, 16.0));
+    let axe_index = altas.add_texture(index_to_rect(10, 7, 16.0));
 
     let atlas_handle = texture_assets.add(altas);
+
+    let mut item_index_map = HashMap::default();
+    item_index_map.insert(Item::Arrow, arrow_index);
+    item_index_map.insert(Item::Axe, axe_index);
 
     let graphics = Graphics {
         texture_altas: atlas_handle,
         player_texture_altas,
         player_index,
-        flint_index,
+        item_index_map,
     };
 
     commands.insert_resource(graphics);
-}
-
-pub fn spawn_flint_system(mut commands: Commands, graphics: Res<Graphics>) {
-    commands.spawn((
-        SpriteSheetBundle {
-            texture_atlas: graphics.texture_altas.clone(),
-            sprite: TextureAtlasSprite {
-                index: graphics.flint_index,
-                custom_size: Some(Vec2::splat(32.0)),
-                ..Default::default()
-            },
-            ..Default::default()
-        },
-        Pickupable,
-    ));
 }

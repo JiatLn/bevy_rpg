@@ -1,3 +1,4 @@
+use crate::inventory::Inventory;
 use crate::player::Player;
 use bevy::input::common_conditions::input_toggle_active;
 use bevy::prelude::*;
@@ -10,6 +11,7 @@ impl Plugin for DebugPlugin {
         app.add_plugins(
             WorldInspectorPlugin::default().run_if(input_toggle_active(true, KeyCode::Escape)),
         )
-        .register_type::<Player>();
+        .register_type::<Player>()
+        .register_type::<Inventory>();
     }
 }

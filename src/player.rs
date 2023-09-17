@@ -1,4 +1,7 @@
-use crate::{components::Pickupable, resources::Graphics};
+use crate::{
+    inventory::{Inventory, Pickupable},
+    resources::Graphics,
+};
 use bevy::prelude::*;
 use bevy_inspector_egui::{prelude::ReflectInspectorOptions, InspectorOptions};
 
@@ -27,9 +30,12 @@ pub fn spawn_palyer_system(mut commands: Commands, graphics: Res<Graphics>) {
                 custom_size: Some(Vec2::splat(48.0)),
                 ..Default::default()
             },
+            // TODO: FIX player z-index
+            transform: Transform::from_xyz(0.0, 0.0, 900.0),
             ..Default::default()
         },
         Player::new(),
+        Inventory::new(),
     ));
 }
 
@@ -61,17 +67,21 @@ pub fn player_movement_system(
 pub fn player_pickup_system(
     mut commands: Commands,
     keyboard: Res<Input<KeyCode>>,
-    player_query: Query<(&Transform, &Player), With<Player>>,
-    mut pick_query: Query<(Entity, &Transform), (With<Pickupable>, Without<Player>)>,
+    mut player_query: Query<(&Transform, &Player, &mut Inventory), With<Player>>,
+    mut pick_query: Query<(Entity, &Transform, &Pickupable), (With<Pickupable>, Without<Player>)>,
 ) {
-    let (player_tf, player) = player_query.single();
+    let (player_tf, player, mut inventory) = player_query.single_mut();
 
     if keyboard.pressed(KeyCode::Space) {
-        for (ent, pickupable_tf) in pick_query.iter_mut() {
-            let distance = pickupable_tf.translation.distance(player_tf.translation);
-            info!("{}", distance);
+        for (ent, pickupable_tf, pickupable) in pick_query.iter_mut() {
+            let distance = pickupable_tf
+                .translation
+                .truncate()
+                .distance(player_tf.translation.truncate());
             if distance <= player.arm_len {
                 commands.entity(ent).despawn_recursive();
+                inventory.add(pickupable.item);
+                dbg!(&inventory.items);
             }
         }
     }

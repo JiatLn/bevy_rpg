@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
 mod camera;
-mod components;
 mod debug;
+mod inventory;
 mod player;
 mod resources;
 mod systems;
@@ -26,7 +26,7 @@ fn main() {
         .add_systems(PreStartup, systems::load_graphics)
         .add_systems(Startup, camera::spawn_camera_system)
         .add_systems(Startup, player::spawn_palyer_system)
-        .add_systems(Startup, systems::spawn_flint_system)
+        .add_systems(Startup, inventory::spawn_items_system)
         .add_systems(Update, player::player_movement_system)
         .add_systems(Update, camera::camera_follow_player_system)
         .add_systems(Update, player::player_pickup_system)
