@@ -30,13 +30,13 @@ impl Inventory {
             items: HashMap::default(),
         }
     }
-    pub fn add(&mut self, item: ItemType, cnt: usize) {
-        *self.items.entry(item).or_insert(0) += cnt;
+    pub fn add(&mut self, item: ItemType, amount: usize) {
+        *self.items.entry(item).or_insert(0) += amount;
         dbg!(&self.items);
     }
-    pub fn cost(&mut self, item: ItemType, cnt: usize) {
+    pub fn cost(&mut self, item: ItemType, amount: usize) {
         let count = self.items.entry(item).or_default();
-        *count -= cnt;
+        *count -= amount;
         if *count <= 0 {
             self.items.remove_entry(&item);
         }

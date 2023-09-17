@@ -44,15 +44,15 @@ pub fn test_crafting_system(
     if keyboard_input.just_pressed(KeyCode::E) {
         info!("crafting");
         for recipe in crafting_book.craftable.iter() {
-            if can_craft(&inventory, recipe) {
-                info!("can_craft {:?}", recipe.preducts);
+            if check_can_craft(&inventory, recipe) {
+                info!("crafted: {:?} x1", recipe.preducts);
                 cost_and_craft(&mut inventory, recipe);
             }
         }
     }
 }
 
-fn can_craft(inventory: &Inventory, recipe: &CraftingRecipe) -> bool {
+fn check_can_craft(inventory: &Inventory, recipe: &CraftingRecipe) -> bool {
     recipe
         .needed
         .iter()
