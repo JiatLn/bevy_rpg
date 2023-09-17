@@ -1,4 +1,4 @@
-use crate::{inventory::Item, resources::Graphics, utils::index_to_rect};
+use crate::{inventory::ItemType, resources::Graphics, utils::index_to_rect};
 use bevy::{prelude::*, utils::HashMap};
 
 pub fn load_graphics(
@@ -20,12 +20,14 @@ pub fn load_graphics(
 
     let arrow_index = altas.add_texture(index_to_rect(9, 11, 16.0));
     let axe_index = altas.add_texture(index_to_rect(10, 7, 16.0));
+    let twig_index = altas.add_texture(index_to_rect(1, 5, 16.0));
 
     let atlas_handle = texture_assets.add(altas);
 
     let mut item_index_map = HashMap::default();
-    item_index_map.insert(Item::Arrow, arrow_index);
-    item_index_map.insert(Item::Axe, axe_index);
+    item_index_map.insert(ItemType::Arrow, arrow_index);
+    item_index_map.insert(ItemType::Axe, axe_index);
+    item_index_map.insert(ItemType::Twig, twig_index);
 
     let graphics = Graphics {
         texture_altas: atlas_handle,

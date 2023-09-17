@@ -4,23 +4,24 @@ use bevy_inspector_egui::{prelude::ReflectInspectorOptions, InspectorOptions};
 
 #[derive(Component)]
 pub struct Pickupable {
-    pub item: Item,
+    pub item: ItemType,
 }
 
 #[derive(Component, Debug, InspectorOptions, Reflect)]
 #[reflect(InspectorOptions)]
 pub struct Inventory {
-    pub items: HashMap<Item, usize>,
+    pub items: HashMap<ItemType, usize>,
 }
 
 #[derive(
     Component, Debug, Default, Clone, Copy, Hash, PartialEq, Eq, InspectorOptions, Reflect,
 )]
-pub enum Item {
+pub enum ItemType {
     #[default]
     None,
     Arrow,
     Axe,
+    Twig,
 }
 
 impl Inventory {
@@ -29,27 +30,35 @@ impl Inventory {
             items: HashMap::default(),
         }
     }
-    pub fn add(&mut self, item: Item) {
-        *self.items.entry(item).or_insert(0) += 1;
+    pub fn add(&mut self, item: ItemType, cnt: usize) {
+        *self.items.entry(item).or_insert(0) += cnt;
+        dbg!(&self.items);
+    }
+    pub fn cost(&mut self, item: ItemType, cnt: usize) {
+        let count = self.items.entry(item).or_default();
+        *count -= cnt;
+        if *count <= 0 {
+            self.items.remove_entry(&item);
+        }
     }
 }
 
 pub fn spawn_items_system(mut commands: Commands, graphics: Res<Graphics>) {
     spawn_item(
         &mut commands,
-        Item::Arrow,
+        ItemType::Twig,
         &graphics,
         Some(Transform::from_xyz(40.0, 50.0, 0.0)),
     );
     spawn_item(
         &mut commands,
-        Item::Arrow,
+        ItemType::Twig,
         &graphics,
         Some(Transform::from_xyz(-40.0, 50.0, 0.0)),
     );
     spawn_item(
         &mut commands,
-        Item::Axe,
+        ItemType::Arrow,
         &graphics,
         Some(Transform::from_xyz(120.0, -50.0, 0.0)),
     );
@@ -57,7 +66,7 @@ pub fn spawn_items_system(mut commands: Commands, graphics: Res<Graphics>) {
 
 fn spawn_item(
     commands: &mut Commands,
-    item: Item,
+    item: ItemType,
     graphics: &Graphics,
     transform: Option<Transform>,
 ) {

@@ -80,8 +80,7 @@ pub fn player_pickup_system(
                 .distance(player_tf.translation.truncate());
             if distance <= player.arm_len {
                 commands.entity(ent).despawn_recursive();
-                inventory.add(pickupable.item);
-                dbg!(&inventory.items);
+                inventory.add(pickupable.item, 1);
             }
         }
     }
