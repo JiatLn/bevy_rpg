@@ -33,13 +33,14 @@ impl WorldObject {
         pickup_item: Option<ItemType>,
         drops: Option<WorldObject>,
     ) {
+        let (index, size) = *graphics
+            .item_index_map
+            .get(&self)
+            .expect(&format!("world object index not found: {:?}", self));
         let mut sprite_sheet = SpriteSheetBundle {
             texture_atlas: graphics.texture_altas.clone(),
             sprite: TextureAtlasSprite {
-                index: *graphics
-                    .item_index_map
-                    .get(&self)
-                    .expect("item index not found"),
+                index,
                 ..Default::default()
             },
             ..Default::default()
@@ -49,7 +50,7 @@ impl WorldObject {
             sprite_sheet.transform = Transform::from_translation(pos.extend(0.0));
         }
 
-        sprite_sheet.sprite.custom_size = custom_size.or(Some(Vec2::splat(32.0)));
+        sprite_sheet.sprite.custom_size = custom_size.or(Some(size));
 
         if let Some(item_type) = pickup_item {
             commands.spawn((
@@ -167,7 +168,7 @@ pub fn spawn_world_objects_system(mut commands: Commands, graphics: Res<Graphics
     WorldObject::Tree.spawn(
         &mut commands,
         &graphics,
-        Some(Vec2::new(32.0, 64.0)),
+        Some(Vec2::new(64.0, 96.0)),
         Some(Vec2::new(420.0, -50.0)),
         Some(ItemType::Grass),
         Some(WorldObject::Trunk),
@@ -175,13 +176,22 @@ pub fn spawn_world_objects_system(mut commands: Commands, graphics: Res<Graphics
 }
 
 pub fn update_world_objects_graphics_system(
-    mut world_obj_query: Query<(&WorldObject, &mut TextureAtlasSprite), Changed<WorldObject>>,
+    mut world_obj_query: Query<
+        (&WorldObject, &mut TextureAtlasSprite, &mut Transform),
+        Changed<WorldObject>,
+    >,
     graphics: Res<Graphics>,
 ) {
-    for (world_object, mut sprite) in world_obj_query.iter_mut() {
-        sprite.index = *graphics
+    for (world_object, mut sprite, mut transform) in world_obj_query.iter_mut() {
+        let (index, size) = *graphics
             .item_index_map
             .get(world_object)
-            .expect("item index not found");
+            .expect(&format!("world object index not found: {:?}", world_object));
+        sprite.index = index;
+        if let Some(old_size) = sprite.custom_size {
+            transform.translation.x -= (old_size.x - size.x) / 2.0;
+            transform.translation.y -= (old_size.y - size.y) / 2.0;
+        }
+        sprite.custom_size = Some(size);
     }
 }

@@ -17,7 +17,7 @@ pub struct Graphics {
     pub texture_altas: Handle<TextureAtlas>,
     pub player_texture_altas: Handle<TextureAtlas>,
     pub player_index: usize,
-    pub item_index_map: HashMap<WorldObject, usize>,
+    pub item_index_map: HashMap<WorldObject, (usize, Vec2)>,
 }
 
 pub fn load_graphics(
@@ -38,29 +38,35 @@ pub fn load_graphics(
     let mut altas = TextureAtlas::new_empty(image_handle, Vec2::splat(384.0));
 
     let stone_index = altas.add_texture(Rect {
-        min: Vec2::new(44.0, 200.0),
-        max: Vec2::new(68.0, 220.0),
+        min: Vec2::new(32.0, 160.0),
+        max: Vec2::new(64.0, 176.0),
     });
     let grass_index = altas.add_texture(Rect {
-        min: Vec2::new(80.0, 100.0),
-        max: Vec2::new(122.0, 136.0),
+        min: Vec2::new(0.0, 96.0),
+        max: Vec2::new(32.0, 128.0),
     });
     let tree_index = altas.add_texture(Rect {
         min: Vec2::new(0.0, 0.0),
-        max: Vec2::new(64.0, 100.0),
+        max: Vec2::new(64.0, 96.0),
     });
     let trunk_index = altas.add_texture(Rect {
-        min: Vec2::new(138.0, 138.0),
-        max: Vec2::new(160.0, 160.0),
+        min: Vec2::new(64.0, 144.0),
+        max: Vec2::new(80.0, 160.0),
     });
 
     let atlas_handle = texture_assets.add(altas);
 
     let mut item_index_map = HashMap::default();
-    item_index_map.insert(WorldObject::Item(ItemType::Stone), stone_index);
-    item_index_map.insert(WorldObject::Item(ItemType::Grass), grass_index);
-    item_index_map.insert(WorldObject::Tree, tree_index);
-    item_index_map.insert(WorldObject::Trunk, trunk_index);
+    item_index_map.insert(
+        WorldObject::Item(ItemType::Stone),
+        (stone_index, Vec2::new(32.0, 16.0)),
+    );
+    item_index_map.insert(
+        WorldObject::Item(ItemType::Grass),
+        (grass_index, Vec2::splat(16.0)),
+    );
+    item_index_map.insert(WorldObject::Tree, (tree_index, Vec2::new(64.0, 96.0)));
+    item_index_map.insert(WorldObject::Trunk, (trunk_index, Vec2::splat(16.0)));
 
     let graphics = Graphics {
         texture_altas: atlas_handle,
