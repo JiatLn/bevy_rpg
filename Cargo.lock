@@ -890,6 +890,8 @@ dependencies = [
  "bevy",
  "bevy-inspector-egui",
  "rand",
+ "ron",
+ "serde",
 ]
 
 [[package]]

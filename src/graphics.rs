@@ -1,8 +1,7 @@
-use crate::{
-    utils::index_to_rect,
-    world_object::{ItemType, WorldObject},
-};
+use crate::{utils::index_to_rect, world_object::WorldObject};
 use bevy::{prelude::*, utils::HashMap};
+use serde::Deserialize;
+use std::fs;
 
 pub struct GraphicsPlugin;
 
@@ -20,53 +19,48 @@ pub struct Graphics {
     pub item_index_map: HashMap<WorldObject, (usize, Vec2)>,
 }
 
+#[derive(Debug, Deserialize)]
+struct GraphicsDescription {
+    map: HashMap<WorldObject, (Rect, Vec2)>,
+}
+
+impl GraphicsDescription {
+    pub fn from_path(path: &str) -> Self {
+        let desc_str = fs::read_to_string(path).unwrap();
+        ron::de::from_str(&desc_str).unwrap()
+    }
+}
+
 pub fn load_graphics(
     mut commands: Commands,
     assets_server: Res<AssetServer>,
     mut texture_assets: ResMut<Assets<TextureAtlas>>,
 ) {
-    let image_handle = assets_server.load("player.png");
+    let mut player_altas = TextureAtlas::from_grid(
+        assets_server.load("player.png"),
+        Vec2::splat(24.0),
+        7,
+        1,
+        None,
+        None,
+    );
 
-    let mut altas = TextureAtlas::from_grid(image_handle, Vec2::splat(24.0), 7, 1, None, None);
+    let player_index = player_altas.add_texture(index_to_rect(0, 0, 24.0));
+    let player_texture_altas = texture_assets.add(player_altas);
 
-    let player_index = altas.add_texture(index_to_rect(0, 0, 24.0));
-
-    let player_texture_altas = texture_assets.add(altas);
-
-    let image_handle = assets_server.load("texture.png");
-
-    let mut altas = TextureAtlas::new_empty(image_handle, Vec2::splat(384.0));
-
-    let stone_index = altas.add_texture(Rect {
-        min: Vec2::new(32.0, 160.0),
-        max: Vec2::new(64.0, 176.0),
-    });
-    let grass_index = altas.add_texture(Rect {
-        min: Vec2::new(0.0, 96.0),
-        max: Vec2::new(32.0, 128.0),
-    });
-    let tree_index = altas.add_texture(Rect {
-        min: Vec2::new(0.0, 0.0),
-        max: Vec2::new(64.0, 96.0),
-    });
-    let trunk_index = altas.add_texture(Rect {
-        min: Vec2::new(64.0, 144.0),
-        max: Vec2::new(80.0, 160.0),
-    });
-
-    let atlas_handle = texture_assets.add(altas);
+    let mut texture_altas =
+        TextureAtlas::new_empty(assets_server.load("texture.png"), Vec2::splat(384.0));
 
     let mut item_index_map = HashMap::default();
-    item_index_map.insert(
-        WorldObject::Item(ItemType::Stone),
-        (stone_index, Vec2::new(32.0, 16.0)),
-    );
-    item_index_map.insert(
-        WorldObject::Item(ItemType::Grass),
-        (grass_index, Vec2::splat(16.0)),
-    );
-    item_index_map.insert(WorldObject::Tree, (tree_index, Vec2::new(64.0, 96.0)));
-    item_index_map.insert(WorldObject::Trunk, (trunk_index, Vec2::splat(16.0)));
+
+    let desc = GraphicsDescription::from_path("assets/graphics_desc.ron");
+
+    for (&world_object, &(rect, size)) in desc.map.iter() {
+        let index = texture_altas.add_texture(rect);
+        item_index_map.insert(world_object, (index, size));
+    }
+
+    let atlas_handle = texture_assets.add(texture_altas);
 
     let graphics = Graphics {
         texture_altas: atlas_handle,

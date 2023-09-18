@@ -1,0 +1,32 @@
+(
+    map: {
+        Item(Stone): (
+            Rect (
+              min: Vec2(32.0, 160.0),
+              max: Vec2(64.0, 176.0),
+            ), 
+            Vec2(32.0, 16.0)
+        ),
+        Item(Grass): (
+            Rect (
+                min: Vec2(0.0, 96.0),
+                max: Vec2(32.0, 128.0),
+            ), 
+            Vec2(16.0, 16.0)
+        ),
+        Tree: (
+            Rect (
+                min: Vec2(0.0, 0.0),
+                max: Vec2(64.0, 96.0),
+            ), 
+            Vec2(64.0, 96.0)
+        ),
+        Trunk: (
+            Rect (
+                min: Vec2(64.0, 144.0),
+                max: Vec2(80.0, 160.0),
+            ), 
+            Vec2(16.0, 16.0)
+        ),
+    }
+)

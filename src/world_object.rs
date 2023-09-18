@@ -1,6 +1,7 @@
 use crate::graphics::Graphics;
 use bevy::prelude::*;
 use bevy_inspector_egui::InspectorOptions;
+use serde::Deserialize;
 
 pub struct WorldObjectPlugin;
 
@@ -65,7 +66,17 @@ impl WorldObject {
 }
 
 #[derive(
-    Component, Debug, Default, Clone, Copy, Hash, PartialEq, Eq, InspectorOptions, Reflect,
+    Deserialize,
+    Component,
+    Debug,
+    Default,
+    Clone,
+    Copy,
+    Hash,
+    PartialEq,
+    Eq,
+    InspectorOptions,
+    Reflect,
 )]
 pub enum WorldObject {
     #[default]
@@ -88,7 +99,17 @@ impl Pickupable {
 }
 
 #[derive(
-    Component, Debug, Default, Clone, Copy, Hash, PartialEq, Eq, InspectorOptions, Reflect,
+    Deserialize,
+    Component,
+    Debug,
+    Default,
+    Clone,
+    Copy,
+    Hash,
+    PartialEq,
+    Eq,
+    InspectorOptions,
+    Reflect,
 )]
 pub enum ItemType {
     #[default]
@@ -145,7 +166,7 @@ pub fn spawn_world_objects_system(mut commands: Commands, graphics: Res<Graphics
         &mut commands,
         &graphics,
         None,
-        Some(Vec2::new(-40.0, 50.0)),
+        Some(Vec2::new(-40.0, 30.0)),
         Some(ItemType::Grass),
         None,
     );
@@ -173,6 +194,14 @@ pub fn spawn_world_objects_system(mut commands: Commands, graphics: Res<Graphics
         Some(ItemType::Grass),
         Some(WorldObject::Trunk),
     );
+    WorldObject::Tree.spawn(
+        &mut commands,
+        &graphics,
+        Some(Vec2::new(64.0, 96.0)),
+        Some(Vec2::new(280.0, -60.0)),
+        Some(ItemType::Grass),
+        Some(WorldObject::Trunk),
+    );
 }
 
 pub fn update_world_objects_graphics_system(
@@ -189,7 +218,6 @@ pub fn update_world_objects_graphics_system(
             .expect(&format!("world object index not found: {:?}", world_object));
         sprite.index = index;
         if let Some(old_size) = sprite.custom_size {
-            transform.translation.x -= (old_size.x - size.x) / 2.0;
             transform.translation.y -= (old_size.y - size.y) / 2.0;
         }
         sprite.custom_size = Some(size);
