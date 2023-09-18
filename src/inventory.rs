@@ -1,6 +1,14 @@
-use crate::resources::Graphics;
+use crate::graphics::Graphics;
 use bevy::{prelude::*, utils::HashMap};
 use bevy_inspector_egui::{prelude::ReflectInspectorOptions, InspectorOptions};
+
+pub struct InventoryPlugin;
+
+impl Plugin for InventoryPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, spawn_items_system);
+    }
+}
 
 #[derive(Component)]
 pub struct Pickupable {

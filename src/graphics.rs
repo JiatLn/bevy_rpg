@@ -1,5 +1,21 @@
-use crate::{inventory::ItemType, resources::Graphics, utils::index_to_rect};
+use crate::{inventory::ItemType, utils::index_to_rect};
 use bevy::{prelude::*, utils::HashMap};
+
+pub struct GraphicsPlugin;
+
+impl Plugin for GraphicsPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(PreStartup, load_graphics);
+    }
+}
+
+#[derive(Resource)]
+pub struct Graphics {
+    pub texture_altas: Handle<TextureAtlas>,
+    pub player_texture_altas: Handle<TextureAtlas>,
+    pub player_index: usize,
+    pub item_index_map: HashMap<ItemType, usize>,
+}
 
 pub fn load_graphics(
     mut commands: Commands,

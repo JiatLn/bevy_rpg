@@ -1,6 +1,15 @@
 use crate::inventory::{Inventory, ItemType};
 use bevy::{prelude::*, utils::HashMap};
 
+pub struct CraftingPlugin;
+
+impl Plugin for CraftingPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(CraftingBook::new())
+            .add_systems(Update, test_crafting_system);
+    }
+}
+
 #[derive(Resource)]
 pub struct CraftingBook {
     craftable: Vec<CraftingRecipe>,
@@ -9,7 +18,7 @@ pub struct CraftingBook {
 impl CraftingBook {
     pub fn new() -> Self {
         CraftingBook {
-            craftable: vec![CraftingRecipe::new(ItemType::Axe)],
+            craftable: vec![CraftingRecipe::create(ItemType::Axe)],
         }
     }
 }
@@ -20,7 +29,7 @@ pub struct CraftingRecipe {
 }
 
 impl CraftingRecipe {
-    pub fn new(preducts: ItemType) -> Self {
+    pub fn create(preducts: ItemType) -> Self {
         let mut needed = HashMap::default();
         match preducts {
             ItemType::None => todo!(),

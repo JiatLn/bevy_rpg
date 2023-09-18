@@ -1,9 +1,19 @@
 use crate::{
+    graphics::Graphics,
     inventory::{Inventory, Pickupable},
-    resources::Graphics,
 };
 use bevy::prelude::*;
 use bevy_inspector_egui::{prelude::ReflectInspectorOptions, InspectorOptions};
+
+pub struct PlayerPlugin;
+
+impl Plugin for PlayerPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, spawn_palyer_system)
+            .add_systems(Update, player_movement_system)
+            .add_systems(Update, player_pickup_system);
+    }
+}
 
 #[derive(Component, Reflect, InspectorOptions)]
 #[reflect(InspectorOptions)]

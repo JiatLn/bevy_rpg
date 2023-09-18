@@ -3,10 +3,9 @@ use bevy::prelude::*;
 mod camera;
 mod crafting;
 mod debug;
+mod graphics;
 mod inventory;
 mod player;
-mod resources;
-mod systems;
 mod utils;
 
 fn main() {
@@ -24,15 +23,11 @@ fn main() {
 
     App::new()
         .add_plugins(default_plugins)
-        .add_systems(PreStartup, systems::load_graphics)
-        .insert_resource(crafting::CraftingBook::new())
-        .add_systems(Startup, camera::spawn_camera_system)
-        .add_systems(Startup, player::spawn_palyer_system)
-        .add_systems(Startup, inventory::spawn_items_system)
-        .add_systems(Update, player::player_movement_system)
-        .add_systems(Update, camera::camera_follow_player_system)
-        .add_systems(Update, player::player_pickup_system)
-        .add_systems(Update, crafting::test_crafting_system)
+        .add_plugins(graphics::GraphicsPlugin)
+        .add_plugins(camera::CameraPlugin)
+        .add_plugins(player::PlayerPlugin)
+        .add_plugins(inventory::InventoryPlugin)
+        .add_plugins(crafting::CraftingPlugin)
         .add_plugins(debug::DebugPlugin)
         .run();
 }
