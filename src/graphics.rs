@@ -1,4 +1,7 @@
-use crate::{inventory::ItemType, utils::index_to_rect};
+use crate::{
+    utils::index_to_rect,
+    world_object::{ItemType, WorldObject},
+};
 use bevy::{prelude::*, utils::HashMap};
 
 pub struct GraphicsPlugin;
@@ -14,7 +17,7 @@ pub struct Graphics {
     pub texture_altas: Handle<TextureAtlas>,
     pub player_texture_altas: Handle<TextureAtlas>,
     pub player_index: usize,
-    pub item_index_map: HashMap<ItemType, usize>,
+    pub item_index_map: HashMap<WorldObject, usize>,
 }
 
 pub fn load_graphics(
@@ -37,13 +40,18 @@ pub fn load_graphics(
     let arrow_index = altas.add_texture(index_to_rect(9, 11, 16.0));
     let axe_index = altas.add_texture(index_to_rect(10, 7, 16.0));
     let twig_index = altas.add_texture(index_to_rect(1, 5, 16.0));
+    let tree_index = altas.add_texture(Rect {
+        min: Vec2::new(4.0 * 16.0, 0.0),
+        max: Vec2::new(5.0 * 16.0, 32.0),
+    });
 
     let atlas_handle = texture_assets.add(altas);
 
     let mut item_index_map = HashMap::default();
-    item_index_map.insert(ItemType::Arrow, arrow_index);
-    item_index_map.insert(ItemType::Axe, axe_index);
-    item_index_map.insert(ItemType::Twig, twig_index);
+    item_index_map.insert(WorldObject::Item(ItemType::Arrow), arrow_index);
+    item_index_map.insert(WorldObject::Item(ItemType::Axe), axe_index);
+    item_index_map.insert(WorldObject::Item(ItemType::Twig), twig_index);
+    item_index_map.insert(WorldObject::Tree, tree_index);
 
     let graphics = Graphics {
         texture_altas: atlas_handle,

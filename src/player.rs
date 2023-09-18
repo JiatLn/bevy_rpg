@@ -1,7 +1,4 @@
-use crate::{
-    graphics::Graphics,
-    inventory::{Inventory, Pickupable},
-};
+use crate::{graphics::Graphics, inventory::Inventory, world_object::Pickupable};
 use bevy::prelude::*;
 use bevy_inspector_egui::{prelude::ReflectInspectorOptions, InspectorOptions};
 
@@ -88,9 +85,11 @@ pub fn player_pickup_system(
                 .translation
                 .truncate()
                 .distance(player_tf.translation.truncate());
+            // TODO: pickup neatest item
             if distance <= player.arm_len {
                 commands.entity(ent).despawn_recursive();
                 inventory.add(pickupable.item, 1);
+                return;
             }
         }
     }

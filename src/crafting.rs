@@ -1,4 +1,4 @@
-use crate::inventory::{Inventory, ItemType};
+use crate::{inventory::Inventory, world_object::ItemType};
 use bevy::{prelude::*, utils::HashMap};
 
 pub struct CraftingPlugin;
@@ -32,13 +32,11 @@ impl CraftingRecipe {
     pub fn create(preducts: ItemType) -> Self {
         let mut needed = HashMap::default();
         match preducts {
-            ItemType::None => todo!(),
-            ItemType::Arrow => todo!(),
             ItemType::Axe => {
                 needed.insert(ItemType::Arrow, 1);
                 needed.insert(ItemType::Twig, 2);
             }
-            ItemType::Twig => todo!(),
+            _ => todo!(),
         }
         CraftingRecipe { needed, preducts }
     }
