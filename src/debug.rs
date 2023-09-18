@@ -1,5 +1,6 @@
 use crate::inventory::Inventory;
 use crate::player::Player;
+use crate::world_object::Pickupable;
 use bevy::input::common_conditions::input_toggle_active;
 use bevy::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
@@ -12,6 +13,7 @@ impl Plugin for DebugPlugin {
             WorldInspectorPlugin::default().run_if(input_toggle_active(true, KeyCode::Escape)),
         )
         .register_type::<Player>()
+        .register_type::<Pickupable>()
         .register_type::<Inventory>();
     }
 }

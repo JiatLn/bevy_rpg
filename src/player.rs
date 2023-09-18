@@ -43,6 +43,7 @@ pub fn spawn_palyer_system(mut commands: Commands, graphics: Res<Graphics>) {
         },
         Player::new(),
         Inventory::new(),
+        Name::new("Player"),
     ));
 }
 
@@ -75,7 +76,7 @@ pub fn player_pickup_system(
     mut commands: Commands,
     keyboard: Res<Input<KeyCode>>,
     mut player_query: Query<(&Transform, &Player, &mut Inventory), With<Player>>,
-    mut pick_query: Query<(Entity, &Transform, &Pickupable), (With<Pickupable>, Without<Player>)>,
+    mut pick_query: Query<(Entity, &Transform, &Pickupable), With<Pickupable>>,
 ) {
     let (player_tf, player, mut inventory) = player_query.single_mut();
 
@@ -87,7 +88,11 @@ pub fn player_pickup_system(
                 .distance(player_tf.translation.truncate());
             // TODO: pickup neatest item
             if distance <= player.arm_len {
-                commands.entity(ent).despawn_recursive();
+                if let Some(drops) = pickupable.drops {
+                    commands.entity(ent).remove::<Pickupable>().insert(drops);
+                } else {
+                    commands.entity(ent).despawn_recursive();
+                }
                 inventory.add(pickupable.item, 1);
                 return;
             }
