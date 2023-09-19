@@ -1,4 +1,4 @@
-use crate::{utils::index_to_rect, world_object::WorldObject};
+use crate::world_object::WorldObject;
 use bevy::{prelude::*, utils::HashMap};
 use serde::Deserialize;
 use std::fs;
@@ -16,6 +16,9 @@ pub struct Graphics {
     pub texture_altas: Handle<TextureAtlas>,
     pub player_texture_altas: Handle<TextureAtlas>,
     pub player_index: usize,
+    // TODO: add more npc texture
+    pub npc_texture_altas: Handle<TextureAtlas>,
+    pub npc_index: usize,
     pub item_index_map: HashMap<WorldObject, (usize, Vec2)>,
 }
 
@@ -39,14 +42,32 @@ pub fn load_graphics(
     let mut player_altas = TextureAtlas::from_grid(
         assets_server.load("player.png"),
         Vec2::splat(24.0),
-        7,
+        44,
         1,
         None,
         None,
     );
 
-    let player_index = player_altas.add_texture(index_to_rect(0, 0, 24.0));
+    let player_index = player_altas.add_texture(Rect {
+        min: Vec2::new(0.0, 0.0),
+        max: Vec2::splat(24.0),
+    });
     let player_texture_altas = texture_assets.add(player_altas);
+
+    let mut npc_altas = TextureAtlas::from_grid(
+        assets_server.load("npc.png"),
+        Vec2::new(48.0, 64.0),
+        8,
+        1,
+        None,
+        None,
+    );
+
+    let npc_index = npc_altas.add_texture(Rect {
+        min: Vec2::new(0.0, 0.0),
+        max: Vec2::new(48.0, 64.0),
+    });
+    let npc_texture_altas = texture_assets.add(npc_altas);
 
     let mut texture_altas =
         TextureAtlas::new_empty(assets_server.load("texture.png"), Vec2::splat(384.0));
@@ -66,6 +87,8 @@ pub fn load_graphics(
         texture_altas: atlas_handle,
         player_texture_altas,
         player_index,
+        npc_texture_altas,
+        npc_index,
         item_index_map,
     };
 

@@ -1,4 +1,9 @@
-use crate::{graphics::Graphics, inventory::Inventory, world_object::Pickupable};
+use crate::{
+    animation::{FrameTime, SpriteAnimation},
+    graphics::Graphics,
+    inventory::Inventory,
+    world_object::Pickupable,
+};
 use bevy::prelude::*;
 use bevy_inspector_egui::{prelude::ReflectInspectorOptions, InspectorOptions};
 
@@ -37,38 +42,42 @@ pub fn spawn_palyer_system(mut commands: Commands, graphics: Res<Graphics>) {
                 custom_size: Some(Vec2::splat(48.0)),
                 ..Default::default()
             },
-            // TODO: FIX player z-index
             transform: Transform::from_xyz(0.0, 0.0, 900.0),
             ..Default::default()
         },
         Player::new(),
         Inventory::new(),
         Name::new("Player"),
+        SpriteAnimation {
+            start_index: 0,
+            len: 4,
+            frame_time: 1.0 / 5.0,
+        },
+        FrameTime(0.0),
     ));
 }
 
 pub fn player_movement_system(
     keyboard: Res<Input<KeyCode>>,
-    mut player_query: Query<(&mut Transform, &Player, &mut TextureAtlasSprite)>,
+    mut player_query: Query<(&mut Transform, &Player, &mut SpriteAnimation)>,
     time: Res<Time>,
 ) {
-    let (mut palyer_tf, player, mut sprite) = player_query.single_mut();
+    let (mut palyer_tf, player, mut animation) = player_query.single_mut();
 
     let delta = player.speed * time.delta_seconds();
 
     if keyboard.any_pressed([KeyCode::A, KeyCode::Left]) {
         palyer_tf.translation.x -= delta;
-        sprite.flip_x = true;
-    }
-    if keyboard.any_pressed([KeyCode::D, KeyCode::Right]) {
+        animation.start_index = 4;
+    } else if keyboard.any_pressed([KeyCode::D, KeyCode::Right]) {
         palyer_tf.translation.x += delta;
-        sprite.flip_x = false;
-    }
-    if keyboard.any_pressed([KeyCode::S, KeyCode::Down]) {
+        animation.start_index = 8;
+    } else if keyboard.any_pressed([KeyCode::S, KeyCode::Down]) {
         palyer_tf.translation.y -= delta;
-    }
-    if keyboard.any_pressed([KeyCode::W, KeyCode::Up]) {
+        animation.start_index = 0;
+    } else if keyboard.any_pressed([KeyCode::W, KeyCode::Up]) {
         palyer_tf.translation.y += delta;
+        animation.start_index = 12;
     }
 }
 

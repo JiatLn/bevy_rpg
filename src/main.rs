@@ -1,12 +1,13 @@
 use bevy::prelude::*;
 
+mod animation;
 mod camera;
 mod crafting;
 mod debug;
 mod graphics;
 mod inventory;
+mod npc;
 mod player;
-mod utils;
 mod world_object;
 
 fn main() {
@@ -27,8 +28,10 @@ fn main() {
         .add_plugins(graphics::GraphicsPlugin)
         .add_plugins(camera::CameraPlugin)
         .add_plugins(player::PlayerPlugin)
+        .add_plugins(npc::NpcPlugin)
         .add_plugins(world_object::WorldObjectPlugin)
         .add_plugins(crafting::CraftingPlugin)
+        .add_plugins(animation::AnimationPlugin)
         .add_plugins(debug::DebugPlugin)
         .run();
 }
