@@ -92,14 +92,17 @@ pub fn player_pickup_system(
     if keyboard.just_pressed(KeyCode::Space) {
         let closest_item = pick_query
             .iter()
-            .map(|(ent, pickupable_tf, pickupable)| {
+            .filter_map(|(ent, pickupable_tf, pickupable)| {
                 let distance = pickupable_tf
                     .translation
                     .truncate()
                     .distance(player_tf.translation.truncate());
-                (ent, pickupable, distance)
+                if player.arm_len >= distance {
+                    Some((ent, pickupable, distance))
+                } else {
+                    None
+                }
             })
-            .filter(|item| item.2 <= player.arm_len)
             .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap());
 
         match closest_item {

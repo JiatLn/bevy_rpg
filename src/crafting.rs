@@ -18,7 +18,7 @@ pub struct CraftingBook {
 impl CraftingBook {
     pub fn new() -> Self {
         CraftingBook {
-            craftable: vec![CraftingRecipe::create(ItemType::Grass)],
+            craftable: vec![CraftingRecipe::create(ItemType::Axe)],
         }
     }
 }
@@ -33,9 +33,9 @@ impl CraftingRecipe {
         let mut needed = HashMap::default();
         match preducts {
             // TODO: improve craft
-            ItemType::Grass => {
+            ItemType::Axe => {
                 needed.insert(ItemType::Stone, 1);
-                needed.insert(ItemType::Grass, 2);
+                needed.insert(ItemType::Wood, 2);
             }
             _ => todo!(),
         }
