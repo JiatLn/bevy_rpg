@@ -38,7 +38,6 @@ pub fn spawn_palyer_system(mut commands: Commands, graphics: Res<Graphics>) {
         SpriteSheetBundle {
             texture_atlas: graphics.player_texture_altas.clone(),
             sprite: TextureAtlasSprite {
-                index: graphics.player_index,
                 custom_size: Some(Vec2::splat(48.0)),
                 ..Default::default()
             },

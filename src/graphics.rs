@@ -15,10 +15,9 @@ impl Plugin for GraphicsPlugin {
 pub struct Graphics {
     pub texture_altas: Handle<TextureAtlas>,
     pub player_texture_altas: Handle<TextureAtlas>,
-    pub player_index: usize,
     // TODO: add more npc texture
     pub npc_texture_altas: Handle<TextureAtlas>,
-    pub npc_index: usize,
+    pub standard_texture_altas: Handle<TextureAtlas>,
     pub item_index_map: HashMap<WorldObject, (usize, Vec2)>,
 }
 
@@ -47,8 +46,7 @@ pub fn load_graphics(
         None,
         None,
     );
-
-    let player_index = player_altas.add_texture(Rect {
+    player_altas.add_texture(Rect {
         min: Vec2::new(0.0, 0.0),
         max: Vec2::splat(24.0),
     });
@@ -62,12 +60,25 @@ pub fn load_graphics(
         None,
         None,
     );
-
-    let npc_index = npc_altas.add_texture(Rect {
+    npc_altas.add_texture(Rect {
         min: Vec2::new(0.0, 0.0),
         max: Vec2::new(48.0, 64.0),
     });
     let npc_texture_altas = texture_assets.add(npc_altas);
+
+    let mut standard_altas = TextureAtlas::from_grid(
+        assets_server.load("standard.png"),
+        Vec2::new(224.0, 288.0),
+        39,
+        1,
+        None,
+        None,
+    );
+    standard_altas.add_texture(Rect {
+        min: Vec2::new(0.0, 0.0),
+        max: Vec2::new(48.0, 64.0),
+    });
+    let standard_texture_altas = texture_assets.add(standard_altas);
 
     let mut texture_altas =
         TextureAtlas::new_empty(assets_server.load("texture.png"), Vec2::splat(384.0));
@@ -86,9 +97,8 @@ pub fn load_graphics(
     let graphics = Graphics {
         texture_altas: atlas_handle,
         player_texture_altas,
-        player_index,
         npc_texture_altas,
-        npc_index,
+        standard_texture_altas,
         item_index_map,
     };
 
