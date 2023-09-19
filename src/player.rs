@@ -76,26 +76,33 @@ pub fn player_pickup_system(
     mut commands: Commands,
     keyboard: Res<Input<KeyCode>>,
     mut player_query: Query<(&Transform, &Player, &mut Inventory), With<Player>>,
-    mut pick_query: Query<(Entity, &Transform, &Pickupable), With<Pickupable>>,
+    pick_query: Query<(Entity, &Transform, &Pickupable), With<Pickupable>>,
 ) {
     let (player_tf, player, mut inventory) = player_query.single_mut();
 
-    if keyboard.pressed(KeyCode::Space) {
-        for (ent, pickupable_tf, pickupable) in pick_query.iter_mut() {
-            let distance = pickupable_tf
-                .translation
-                .truncate()
-                .distance(player_tf.translation.truncate());
-            // TODO: pickup neatest item
-            if distance <= player.arm_len {
+    if keyboard.just_pressed(KeyCode::Space) {
+        let closest_item = pick_query
+            .iter()
+            .map(|(ent, pickupable_tf, pickupable)| {
+                let distance = pickupable_tf
+                    .translation
+                    .truncate()
+                    .distance(player_tf.translation.truncate());
+                (ent, pickupable, distance)
+            })
+            .filter(|item| item.2 <= player.arm_len)
+            .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap());
+
+        match closest_item {
+            Some((ent, pickupable, _)) => {
                 if let Some(drops) = pickupable.drops {
                     commands.entity(ent).remove::<Pickupable>().insert(drops);
                 } else {
                     commands.entity(ent).despawn_recursive();
                 }
                 inventory.add(pickupable.item, 1);
-                return;
             }
+            None => (),
         }
     }
 }
