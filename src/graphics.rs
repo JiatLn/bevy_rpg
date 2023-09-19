@@ -81,7 +81,7 @@ pub fn load_graphics(
     let standard_texture_altas = texture_assets.add(standard_altas);
 
     let mut texture_altas =
-        TextureAtlas::new_empty(assets_server.load("texture.png"), Vec2::splat(384.0));
+        TextureAtlas::new_empty(assets_server.load("texture.png"), Vec2::splat(640.0));
 
     let mut item_index_map = HashMap::default();
 

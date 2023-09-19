@@ -5,20 +5,27 @@ pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_camera_system)
+        app.add_systems(PreStartup, spawn_camera_system)
             .add_systems(Update, camera_follow_player_system);
     }
 }
+
+#[derive(Component)]
+pub struct MainCamera;
 
 pub fn spawn_camera_system(mut commands: Commands) {
     let mut camera_2d = Camera2d::default();
 
     camera_2d.clear_color = ClearColorConfig::Custom(Color::LIME_GREEN);
 
-    commands.spawn(Camera2dBundle {
-        camera_2d,
-        ..Default::default()
-    });
+    commands.spawn((
+        Camera2dBundle {
+            camera_2d,
+            ..Default::default()
+        },
+        MainCamera,
+        Name::new("Main Camera"),
+    ));
 }
 
 pub fn camera_follow_player_system(

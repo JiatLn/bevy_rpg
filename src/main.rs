@@ -8,6 +8,7 @@ mod graphics;
 mod inventory;
 mod npc;
 mod player;
+mod ui;
 mod world_object;
 
 fn main() {
@@ -32,6 +33,7 @@ fn main() {
         .add_plugins(world_object::WorldObjectPlugin)
         .add_plugins(crafting::CraftingPlugin)
         .add_plugins(animation::AnimationPlugin)
+        .add_plugins(ui::UiPlugin)
         .add_plugins(debug::DebugPlugin)
         .run();
 }

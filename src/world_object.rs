@@ -34,6 +34,7 @@ pub enum WorldObject {
     Trunk,
     GrassWithFlower,
     Grass,
+    InventoryBox,
 }
 
 #[derive(Component, InspectorOptions, Reflect)]
@@ -77,6 +78,7 @@ impl From<WorldObject> for String {
             WorldObject::Trunk => "Sapling".to_string(),
             WorldObject::GrassWithFlower => "grass with flower".to_string(),
             WorldObject::Grass => "grass without flower".to_string(),
+            WorldObject::InventoryBox => "inventory box".to_string(),
         }
     }
 }
@@ -88,7 +90,7 @@ impl WorldObject {
         graphics: &Graphics,
         custom_size: Option<Vec2>,
         position: Option<Vec2>,
-    ) {
+    ) -> Entity {
         let (index, size) = *graphics
             .item_index_map
             .get(&self)
@@ -111,6 +113,7 @@ impl WorldObject {
         if let Some(pickable) = self.pickupable_into() {
             ent.insert(pickable);
         }
+        ent.id()
     }
     pub fn growth_into(&self) -> Option<(WorldObject, f32)> {
         match self {
@@ -170,48 +173,53 @@ pub fn regrowth_system(
 }
 
 pub fn spawn_world_objects_system(mut commands: Commands, graphics: Res<Graphics>) {
-    WorldObject::Item(ItemType::Stone).spawn(
+    let mut world_objects = vec![];
+
+    world_objects.push(WorldObject::Item(ItemType::Stone).spawn(
         &mut commands,
         &graphics,
         None,
         Some(Vec2::new(40.0, 50.0)),
-    );
-    WorldObject::Item(ItemType::Axe).spawn(
+    ));
+    world_objects.push(WorldObject::Item(ItemType::Stone).spawn(
         &mut commands,
         &graphics,
         None,
         Some(Vec2::new(-40.0, 30.0)),
-    );
-    WorldObject::Item(ItemType::Stone).spawn(
+    ));
+    world_objects.push(WorldObject::Item(ItemType::Stone).spawn(
         &mut commands,
         &graphics,
         None,
         Some(Vec2::new(120.0, -50.0)),
-    );
-    WorldObject::Trunk.spawn(
+    ));
+    world_objects.push(WorldObject::Trunk.spawn(
         &mut commands,
         &graphics,
         None,
         Some(Vec2::new(120.0, -90.0)),
-    );
-    WorldObject::Tree.spawn(
+    ));
+    world_objects.push(WorldObject::Tree.spawn(
         &mut commands,
         &graphics,
         Some(Vec2::new(64.0, 96.0)),
         Some(Vec2::new(420.0, -50.0)),
-    );
-    WorldObject::Tree.spawn(
+    ));
+    world_objects.push(WorldObject::Tree.spawn(
         &mut commands,
         &graphics,
         Some(Vec2::new(64.0, 96.0)),
         Some(Vec2::new(280.0, -60.0)),
-    );
-    WorldObject::GrassWithFlower.spawn(
+    ));
+    world_objects.push(WorldObject::GrassWithFlower.spawn(
         &mut commands,
         &graphics,
         None,
         Some(Vec2::new(180.0, -60.0)),
-    );
+    ));
+    commands
+        .spawn(SpatialBundle::default())
+        .push_children(&world_objects);
 }
 
 pub fn update_world_objects_graphics_system(
