@@ -14,6 +14,9 @@ impl Inventory {
             items: HashMap::default(),
         }
     }
+    pub fn to_vec(&self) -> Vec<(ItemType, usize)> {
+        Vec::from_iter(self.items.clone().into_iter())
+    }
     pub fn add(&mut self, item: ItemType, amount: usize) {
         *self.items.entry(item).or_insert(0) += amount;
         dbg!(&self.items);
