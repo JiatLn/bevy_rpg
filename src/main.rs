@@ -17,7 +17,7 @@ fn main() {
         .set(WindowPlugin {
             primary_window: Some(Window {
                 title: "Logic Farming Rougelike".into(),
-                resolution: (1600.0 / 2.0, 900.0 / 2.0).into(),
+                resolution: (1600.0 / 1.5, 900.0 / 1.5).into(),
                 resizable: false,
                 ..default()
             }),
