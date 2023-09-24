@@ -60,6 +60,7 @@ pub enum ItemType {
     #[default]
     None,
     Stone,
+    Stones,
     Flower,
     Axe,
     Wood,

@@ -7,6 +7,13 @@
             ), 
             Vec2(32.0, 32.0)
         ),
+        Item(Stones): (
+            Rect (
+                min: Vec2(64.0, 384.0),
+                max: Vec2(96.0, 416.0),
+            ), 
+            Vec2(32.0, 32.0)
+        ),
         Item(Axe): (
             Rect (
                 min: Vec2(96.0, 160.0),

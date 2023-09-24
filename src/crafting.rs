@@ -1,25 +1,31 @@
-use crate::{inventory::Inventory, world_object::ItemType};
+use crate::{inventory::Inventory, ui::CraftingButton, world_object::ItemType};
 use bevy::{prelude::*, utils::HashMap};
 
 pub struct CraftingPlugin;
 
 impl Plugin for CraftingPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(CraftingBook::new())
-            .add_systems(Update, test_crafting_system);
+        app.insert_resource(CraftingBook::default())
+            .add_systems(Update, crafting_system);
     }
 }
 
 #[derive(Resource)]
 pub struct CraftingBook {
-    craftable: Vec<CraftingRecipe>,
+    pub craftable: Vec<CraftingRecipe>,
 }
 
 impl CraftingBook {
     pub fn new() -> Self {
         CraftingBook {
-            craftable: vec![CraftingRecipe::create(ItemType::Axe)],
+            craftable: vec![
+                CraftingRecipe::create(ItemType::Axe),
+                CraftingRecipe::create(ItemType::Stones),
+            ],
         }
+    }
+    pub fn default() -> Self {
+        CraftingBook::new()
     }
 }
 
@@ -37,39 +43,49 @@ impl CraftingRecipe {
                 needed.insert(ItemType::Stone, 1);
                 needed.insert(ItemType::Wood, 2);
             }
+            ItemType::Stones => {
+                needed.insert(ItemType::Stone, 3);
+            }
             _ => todo!(),
         }
         CraftingRecipe { needed, preducts }
     }
-}
-
-pub fn test_crafting_system(
-    mut inventory: Query<&mut Inventory>,
-    keyboard_input: Res<Input<KeyCode>>,
-    crafting_book: Res<CraftingBook>,
-) {
-    let mut inventory = inventory.single_mut();
-    if keyboard_input.just_pressed(KeyCode::E) {
-        info!("crafting");
-        for recipe in crafting_book.craftable.iter() {
-            if check_can_craft(&inventory, recipe) {
-                info!("crafted: {:?} x1", recipe.preducts);
-                cost_and_craft(&mut inventory, recipe);
-            }
-        }
+    pub fn can_craft(&self, inventory: &Inventory) -> bool {
+        self.needed
+            .iter()
+            .all(|(item, cnt)| *inventory.items.get(item).get_or_insert(&0) >= cnt)
     }
 }
 
-fn check_can_craft(inventory: &Inventory, recipe: &CraftingRecipe) -> bool {
-    recipe
-        .needed
-        .iter()
-        .all(|(item, cnt)| *inventory.items.get(item).get_or_insert(&0) >= cnt)
-}
-
-fn cost_and_craft(inventory: &mut Inventory, recipe: &CraftingRecipe) {
+pub fn cost_and_craft(inventory: &mut Inventory, recipe: &CraftingRecipe) {
     recipe.needed.iter().for_each(|(&item, &cnt)| {
         inventory.cost(item, cnt);
     });
     inventory.add(recipe.preducts, 1);
+}
+
+fn crafting_system(
+    interaction_query: Query<
+        (&Interaction, &CraftingButton),
+        (Changed<Interaction>, With<CraftingButton>),
+    >,
+    crafting_book: Res<CraftingBook>,
+    mut inventory_query: Query<&mut Inventory>,
+) {
+    for (interaction, crafting_button) in interaction_query.iter() {
+        match *interaction {
+            Interaction::Pressed => {
+                let crafting_index = crafting_button.0;
+                let recipe = &crafting_book.craftable[crafting_index];
+                let mut inventory = inventory_query.single_mut();
+                if recipe.can_craft(&inventory) {
+                    info!("crafted: {:?} ×1", recipe.preducts);
+                    cost_and_craft(&mut inventory, recipe);
+                } else {
+                    info!("not enough to crafting the {:?}", recipe.preducts);
+                }
+            }
+            _ => (),
+        }
+    }
 }
