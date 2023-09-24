@@ -15,7 +15,7 @@ impl Plugin for UiPlugin {
             PostUpdate,
             (
                 update_inventory_box_system,
-                update_crafting_book_button_system,
+                update_crafting_book_button_status_system,
             ),
         );
     }
@@ -26,9 +26,6 @@ pub struct InventoryBox(pub usize);
 
 #[derive(Component)]
 pub struct CraftingButton(pub usize);
-
-#[derive(Component)]
-pub struct InventoryLayout;
 
 const INVENTORY_NUM: usize = 8;
 
@@ -52,7 +49,6 @@ pub fn spawn_inventory_box_system(mut commands: Commands, graphics: Res<Graphics
             },
             ..default()
         },
-        InventoryLayout,
         Name::new("Inventory Box"),
     );
 
@@ -253,7 +249,7 @@ pub fn update_inventory_box_system(
     }
 }
 
-pub fn update_crafting_book_button_system(
+pub fn update_crafting_book_button_status_system(
     inventory_query: Query<&Inventory, Changed<Inventory>>,
     mut crafting_button_query: Query<(&CraftingButton, &mut BackgroundColor), With<CraftingButton>>,
     crafting_book: Res<CraftingBook>,
