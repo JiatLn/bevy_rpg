@@ -39,6 +39,7 @@ pub fn spawn_inventory_box_system(mut commands: Commands, graphics: Res<Graphics
             ..default()
         },
         InventoryLayout,
+        Name::new("Inventory Box"),
     );
 
     let inventory_boxes = (0..INVENTORY_NUM)
@@ -51,6 +52,9 @@ pub fn spawn_inventory_box_system(mut commands: Commands, graphics: Res<Graphics
                         ..Default::default()
                     },
                     style: Style {
+                        display: Display::Flex,
+                        align_items: AlignItems::Center,
+                        justify_content: JustifyContent::Center,
                         width: Val::Px(size.x),
                         height: Val::Px(size.y),
                         ..default()
@@ -96,8 +100,7 @@ pub fn update_inventory_box_system(
                 continue;
             }
 
-            // TODO: add the inventory count
-            let (item_type, _count) = inventory_vec[inventory_box.0];
+            let (item_type, count) = inventory_vec[inventory_box.0];
 
             let (index, _size) = *graphics
                 .item_index_map
@@ -111,13 +114,35 @@ pub fn update_inventory_box_system(
                     ..Default::default()
                 },
                 style: Style {
-                    width: style.width,
-                    height: style.height,
+                    display: Display::Flex,
+                    align_items: AlignItems::FlexEnd,
+                    justify_content: JustifyContent::FlexEnd,
+                    width: style.width * 0.9,
+                    height: style.height * 0.9,
                     ..default()
                 },
                 ..Default::default()
             };
-            let ent = commands.spawn(aib).id();
+            let ent = commands
+                .spawn(aib)
+                .with_children(|parent| {
+                    parent.spawn(TextBundle {
+                        text: Text {
+                            alignment: TextAlignment::Right,
+                            sections: vec![TextSection {
+                                value: count.to_string().into(),
+                                ..Default::default()
+                            }],
+                            ..Default::default()
+                        },
+                        style: Style {
+                            margin: UiRect::px(0.0, 3.0, 0.0, 3.0),
+                            ..Default::default()
+                        },
+                        ..Default::default()
+                    });
+                })
+                .id();
             commands.entity(inventory_box_ent).add_child(ent);
         }
     }
