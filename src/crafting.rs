@@ -1,55 +1,36 @@
 use crate::{inventory::Inventory, ui::CraftingButton, world_object::ItemType};
 use bevy::{prelude::*, utils::HashMap};
+use serde::Deserialize;
+use std::fs;
 
 pub struct CraftingPlugin;
 
 impl Plugin for CraftingPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(CraftingBook::default())
+        app.insert_resource(CraftingBook::from_path("assets/crafting_book_desc.ron"))
             .add_systems(Update, crafting_system);
     }
 }
 
-#[derive(Resource)]
+#[derive(Resource, Deserialize)]
 pub struct CraftingBook {
     pub craftable: Vec<CraftingRecipe>,
 }
 
 impl CraftingBook {
-    pub fn new() -> Self {
-        CraftingBook {
-            craftable: vec![
-                CraftingRecipe::create(ItemType::Axe),
-                CraftingRecipe::create(ItemType::Stones),
-            ],
-        }
-    }
-    pub fn default() -> Self {
-        CraftingBook::new()
+    pub fn from_path(path: &str) -> Self {
+        let desc_str = fs::read_to_string(path).unwrap();
+        ron::de::from_str(&desc_str).unwrap()
     }
 }
 
+#[derive(Deserialize)]
 pub struct CraftingRecipe {
     pub needed: HashMap<ItemType, usize>,
     pub preducts: ItemType,
 }
 
 impl CraftingRecipe {
-    pub fn create(preducts: ItemType) -> Self {
-        let mut needed = HashMap::default();
-        match preducts {
-            // TODO: improve craft
-            ItemType::Axe => {
-                needed.insert(ItemType::Stone, 1);
-                needed.insert(ItemType::Wood, 2);
-            }
-            ItemType::Stones => {
-                needed.insert(ItemType::Stone, 3);
-            }
-            _ => todo!(),
-        }
-        CraftingRecipe { needed, preducts }
-    }
     pub fn can_craft(&self, inventory: &Inventory) -> bool {
         self.needed
             .iter()

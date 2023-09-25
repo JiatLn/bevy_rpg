@@ -1,0 +1,17 @@
+(
+    craftable: [
+        CraftingRecipe (
+            needed: {
+                Stone: 1,
+                Wood: 2,
+            },
+            preducts: Axe
+        ),
+        CraftingRecipe (
+            needed: {
+                Stone: 3,
+            },
+            preducts: Stones
+        ),
+    ]
+)
