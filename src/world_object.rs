@@ -96,7 +96,7 @@ impl WorldObject {
         let (index, size) = *graphics
             .item_index_map
             .get(&self)
-            .expect(&format!("world object index not found: {:?}", self));
+            .unwrap_or_else(|| panic!("world object index not found: {:?}", self));
         let mut sprite_sheet = SpriteSheetBundle {
             texture_atlas: graphics.texture_altas.clone(),
             sprite: TextureAtlasSprite {
@@ -107,7 +107,7 @@ impl WorldObject {
         };
 
         sprite_sheet.transform =
-            Transform::from_translation(position.or(Some(Vec2::ZERO)).unwrap().extend(0.0));
+            Transform::from_translation(position.unwrap_or(Vec2::ZERO).extend(0.0));
         sprite_sheet.sprite.custom_size = custom_size.or(Some(size));
 
         let mut ent = commands.spawn((sprite_sheet, Name::new(String::from(self))));
@@ -175,50 +175,51 @@ pub fn regrowth_system(
 }
 
 pub fn spawn_world_objects_system(mut commands: Commands, graphics: Res<Graphics>) {
-    let mut world_objects = vec![];
+    let world_objects = vec![
+        WorldObject::Item(ItemType::Stone).spawn(
+            &mut commands,
+            &graphics,
+            None,
+            Some(Vec2::new(40.0, 50.0)),
+        ),
+        WorldObject::Item(ItemType::Stone).spawn(
+            &mut commands,
+            &graphics,
+            None,
+            Some(Vec2::new(-40.0, 30.0)),
+        ),
+        WorldObject::Item(ItemType::Stone).spawn(
+            &mut commands,
+            &graphics,
+            None,
+            Some(Vec2::new(120.0, -50.0)),
+        ),
+        WorldObject::Trunk.spawn(
+            &mut commands,
+            &graphics,
+            None,
+            Some(Vec2::new(120.0, -90.0)),
+        ),
+        WorldObject::Tree.spawn(
+            &mut commands,
+            &graphics,
+            Some(Vec2::new(64.0, 96.0)),
+            Some(Vec2::new(420.0, -50.0)),
+        ),
+        WorldObject::Tree.spawn(
+            &mut commands,
+            &graphics,
+            Some(Vec2::new(64.0, 96.0)),
+            Some(Vec2::new(280.0, -60.0)),
+        ),
+        WorldObject::GrassWithFlower.spawn(
+            &mut commands,
+            &graphics,
+            None,
+            Some(Vec2::new(180.0, -60.0)),
+        ),
+    ];
 
-    world_objects.push(WorldObject::Item(ItemType::Stone).spawn(
-        &mut commands,
-        &graphics,
-        None,
-        Some(Vec2::new(40.0, 50.0)),
-    ));
-    world_objects.push(WorldObject::Item(ItemType::Stone).spawn(
-        &mut commands,
-        &graphics,
-        None,
-        Some(Vec2::new(-40.0, 30.0)),
-    ));
-    world_objects.push(WorldObject::Item(ItemType::Stone).spawn(
-        &mut commands,
-        &graphics,
-        None,
-        Some(Vec2::new(120.0, -50.0)),
-    ));
-    world_objects.push(WorldObject::Trunk.spawn(
-        &mut commands,
-        &graphics,
-        None,
-        Some(Vec2::new(120.0, -90.0)),
-    ));
-    world_objects.push(WorldObject::Tree.spawn(
-        &mut commands,
-        &graphics,
-        Some(Vec2::new(64.0, 96.0)),
-        Some(Vec2::new(420.0, -50.0)),
-    ));
-    world_objects.push(WorldObject::Tree.spawn(
-        &mut commands,
-        &graphics,
-        Some(Vec2::new(64.0, 96.0)),
-        Some(Vec2::new(280.0, -60.0)),
-    ));
-    world_objects.push(WorldObject::GrassWithFlower.spawn(
-        &mut commands,
-        &graphics,
-        None,
-        Some(Vec2::new(180.0, -60.0)),
-    ));
     commands
         .spawn(SpatialBundle::default())
         .push_children(&world_objects);
@@ -235,7 +236,7 @@ pub fn update_world_objects_graphics_system(
         let (index, size) = *graphics
             .item_index_map
             .get(world_object)
-            .expect(&format!("world object index not found: {:?}", world_object));
+            .unwrap_or_else(|| panic!("world object index not found: {:?}", world_object));
         sprite.index = index;
         if let Some(old_size) = sprite.custom_size {
             transform.translation.y -= (old_size.y - size.y) / 2.0;

@@ -15,7 +15,7 @@ impl Plugin for NpcPlugin {
 
 #[derive(Component, Reflect, InspectorOptions)]
 #[reflect(InspectorOptions)]
-pub struct NPC;
+pub struct Npc;
 
 pub fn spawn_npc_system(mut commands: Commands, graphics: Res<Graphics>) {
     commands.spawn((
@@ -34,7 +34,7 @@ pub fn spawn_npc_system(mut commands: Commands, graphics: Res<Graphics>) {
             start_index: 0,
             len: 8,
         },
-        NPC,
+        Npc,
         FrameTime(0.0),
     ));
 }
@@ -57,7 +57,7 @@ pub fn spawn_standard_system(mut commands: Commands, graphics: Res<Graphics>) {
             start_index: 0,
             len: 39,
         },
-        NPC,
+        Npc,
         FrameTime(0.0),
     ));
 }

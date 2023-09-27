@@ -14,9 +14,9 @@ impl Plugin for CameraPlugin {
 pub struct MainCamera;
 
 pub fn spawn_camera_system(mut commands: Commands) {
-    let mut camera_2d = Camera2d::default();
-
-    camera_2d.clear_color = ClearColorConfig::Custom(Color::LIME_GREEN);
+    let camera_2d = Camera2d {
+        clear_color: ClearColorConfig::Custom(Color::LIME_GREEN),
+    };
 
     commands.spawn((
         Camera2dBundle {

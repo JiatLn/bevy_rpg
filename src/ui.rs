@@ -139,10 +139,9 @@ pub fn spawn_crafting_books_system(
                     let (index, _size) = *graphics
                         .item_index_map
                         .get(&WorldObject::Item(recipe.preducts))
-                        .expect(&format!(
-                            "graphics [{:?}] index not found",
-                            &recipe.preducts
-                        ));
+                        .unwrap_or_else(|| {
+                            panic!("graphics [{:?}] index not found", &recipe.preducts)
+                        });
 
                     parent
                         .spawn(AtlasImageBundle {
@@ -210,7 +209,7 @@ pub fn update_inventory_box_system(
             let (index, _size) = *graphics
                 .item_index_map
                 .get(&WorldObject::Item(item_type))
-                .expect(&format!("inventory box [{:?}] index not found", item_type));
+                .unwrap_or_else(|| panic!("inventory box [{:?}] index not found", item_type));
 
             let aib = AtlasImageBundle {
                 texture_atlas: graphics.texture_altas.clone(),
@@ -235,7 +234,7 @@ pub fn update_inventory_box_system(
                         text: Text {
                             alignment: TextAlignment::Right,
                             sections: vec![TextSection {
-                                value: count.to_string().into(),
+                                value: count.to_string(),
                                 ..Default::default()
                             }],
                             ..Default::default()

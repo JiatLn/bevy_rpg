@@ -1,4 +1,3 @@
-use crate::graphics::Graphics;
 use bevy::{prelude::*, window::PrimaryWindow};
 
 pub struct DragPlugin;
@@ -73,7 +72,6 @@ fn drop(
     mut commands: Commands,
     mut q_dropped: Query<(Entity, &mut Transform, &GlobalTransform), Added<Dropped>>,
     windows_query: Query<&Window, With<PrimaryWindow>>,
-    graphics: Res<Graphics>,
 ) {
     if let Some(position) = windows_query.single().cursor_position() {
         for (entity, mut transform, global_transform) in q_dropped.iter_mut() {

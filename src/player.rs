@@ -24,8 +24,8 @@ pub struct Player {
     pub arm_len: f32,
 }
 
-impl Player {
-    pub fn new() -> Self {
+impl Default for Player {
+    fn default() -> Self {
         Player {
             speed: 80.0,
             arm_len: 50.0,
@@ -44,7 +44,7 @@ pub fn spawn_palyer_system(mut commands: Commands, graphics: Res<Graphics>) {
             transform: Transform::from_xyz(0.0, 0.0, 900.0),
             ..Default::default()
         },
-        Player::new(),
+        Player::default(),
         Inventory::new(),
         Name::new("Player"),
         SpriteAnimation {
@@ -104,16 +104,13 @@ pub fn player_pickup_system(
             })
             .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap());
 
-        match closest_item {
-            Some((ent, pickupable, _)) => {
-                if let Some(drops) = pickupable.drops {
-                    commands.entity(ent).remove::<Pickupable>().insert(drops);
-                } else {
-                    commands.entity(ent).despawn_recursive();
-                }
-                inventory.add(pickupable.item, 1);
+        if let Some((ent, pickupable, _)) = closest_item {
+            if let Some(drops) = pickupable.drops {
+                commands.entity(ent).remove::<Pickupable>().insert(drops);
+            } else {
+                commands.entity(ent).despawn_recursive();
             }
-            None => (),
+            inventory.add(pickupable.item, 1);
         }
     }
 }

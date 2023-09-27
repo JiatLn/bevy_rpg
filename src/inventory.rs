@@ -8,6 +8,12 @@ pub struct Inventory {
     pub items: HashMap<ItemType, usize>,
 }
 
+impl Default for Inventory {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Inventory {
     pub fn new() -> Self {
         Inventory {
@@ -15,7 +21,7 @@ impl Inventory {
         }
     }
     pub fn to_vec(&self) -> Vec<(ItemType, usize)> {
-        Vec::from_iter(self.items.clone().into_iter())
+        Vec::from_iter(self.items.clone())
     }
     pub fn add(&mut self, item: ItemType, amount: usize) {
         *self.items.entry(item).or_insert(0) += amount;
@@ -24,7 +30,7 @@ impl Inventory {
     pub fn cost(&mut self, item: ItemType, amount: usize) {
         let count = self.items.entry(item).or_default();
         *count -= amount;
-        if *count <= 0 {
+        if *count == 0 {
             self.items.remove_entry(&item);
         }
     }

@@ -66,7 +66,7 @@ fn crafting_system(
                     info!("not enough to crafting the {:?}", recipe.preducts);
                 }
             }
-            _ => (),
+            _ => unreachable!(),
         }
     }
 }
