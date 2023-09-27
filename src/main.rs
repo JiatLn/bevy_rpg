@@ -4,6 +4,7 @@ mod animation;
 mod camera;
 mod crafting;
 mod debug;
+mod drag_and_drop;
 mod graphics;
 mod inventory;
 mod npc;
@@ -34,6 +35,7 @@ fn main() {
         .add_plugins(crafting::CraftingPlugin)
         .add_plugins(animation::AnimationPlugin)
         .add_plugins(ui::UiPlugin)
+        .add_plugins(drag_and_drop::DragPlugin)
         .add_plugins(debug::DebugPlugin)
         .run();
 }

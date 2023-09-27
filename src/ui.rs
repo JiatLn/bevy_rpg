@@ -1,5 +1,9 @@
 use crate::{
-    crafting::CraftingBook, graphics::Graphics, inventory::Inventory, world_object::WorldObject,
+    crafting::CraftingBook,
+    drag_and_drop::{Draggable, Hoverable},
+    graphics::Graphics,
+    inventory::Inventory,
+    world_object::WorldObject,
 };
 use bevy::prelude::*;
 
@@ -243,6 +247,8 @@ pub fn update_inventory_box_system(
                         ..Default::default()
                     });
                 })
+                .insert(Hoverable)
+                .insert(Draggable)
                 .id();
             commands.entity(inventory_box_ent).add_child(ent);
         }

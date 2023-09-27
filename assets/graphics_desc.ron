@@ -35,6 +35,13 @@
             ), 
             Vec2(32.0, 32.0)
         ),
+        Item(Fire): (
+            Rect (
+                min: Vec2(48.0, 416.0),
+                max: Vec2(80.0, 448.0),
+            ), 
+            Vec2(48.0, 48.0)
+        ),
         GrassWithFlower: (
             Rect (
                 min: Vec2(32.0, 96.0),

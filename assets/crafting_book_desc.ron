@@ -13,5 +13,10 @@
             },
             preducts: Stones
         ),
+        CraftingRecipe (
+            needed: {
+            },
+            preducts: Fire
+        ),
     ]
 )

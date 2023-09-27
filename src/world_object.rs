@@ -64,6 +64,7 @@ pub enum ItemType {
     Flower,
     Axe,
     Wood,
+    Fire,
 }
 
 #[derive(Component, Reflect, Default)]
@@ -85,7 +86,7 @@ impl From<WorldObject> for String {
 }
 
 impl WorldObject {
-    fn spawn(
+    pub fn spawn(
         self,
         commands: &mut Commands,
         graphics: &Graphics,
