@@ -1,3 +1,8 @@
+use crate::{
+    camera::MainCamera,
+    graphics::Graphics,
+    world_object::{ItemType, WorldObject},
+};
 use bevy::{prelude::*, window::PrimaryWindow};
 
 pub struct DragPlugin;
@@ -70,20 +75,25 @@ fn draggable_system(
 
 fn drop(
     mut commands: Commands,
-    mut q_dropped: Query<(Entity, &mut Transform, &GlobalTransform), Added<Dropped>>,
+    dropped_query: Query<Entity, Added<Dropped>>,
     windows_query: Query<&Window, With<PrimaryWindow>>,
+    camera_query: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
+    graphics: Res<Graphics>,
 ) {
     if let Some(position) = windows_query.single().cursor_position() {
-        for (entity, mut transform, global_transform) in q_dropped.iter_mut() {
-            let global_pos = global_transform.translation();
+        let (camera, camera_transform) = camera_query.single();
 
-            transform.translation.x = global_pos.x;
-            transform.translation.y = global_pos.y;
-
-            info!("Dropped position {:?}", position);
+        for entity in dropped_query.iter() {
             commands.entity(entity).remove::<Dropped>();
 
-            // TODO: spawn item at dropped position
+            let position = camera
+                .viewport_to_world(camera_transform, position)
+                .map(|ray| ray.origin.truncate())
+                .unwrap();
+
+            WorldObject::Item(ItemType::Fire).spawn(&mut commands, &graphics, None, Some(position));
+
+            // TODO: cost the item and gene truely item
         }
     }
 }
