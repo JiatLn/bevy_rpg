@@ -187,9 +187,6 @@ pub fn update_inventory_box_system(
     inventory_boxes_query: Query<(Entity, &InventoryBox, Option<&Children>), With<InventoryBox>>,
 ) {
     if let Ok(inventory) = inventory_query.get_single() {
-        if inventory.items.is_empty() {
-            return;
-        }
         let inventory_vec = inventory.to_vec();
 
         // TODO: fix the inventory box order
@@ -227,8 +224,13 @@ pub fn update_inventory_box_system(
                 },
                 ..Default::default()
             };
-            let ent = commands
-                .spawn(aib)
+            let mut ent = commands.spawn(aib);
+
+            if item_type.is_draggable() {
+                ent.insert((Hoverable, Draggable { item_type }));
+            }
+
+            let ent = ent
                 .with_children(|parent| {
                     parent.spawn(TextBundle {
                         text: Text {
@@ -246,9 +248,8 @@ pub fn update_inventory_box_system(
                         ..Default::default()
                     });
                 })
-                .insert(Hoverable)
-                .insert(Draggable)
                 .id();
+
             commands.entity(inventory_box_ent).add_child(ent);
         }
     }

@@ -15,6 +15,7 @@
         ),
         CraftingRecipe (
             needed: {
+                Wood: 1,
             },
             preducts: Fire
         ),

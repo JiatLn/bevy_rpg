@@ -85,6 +85,12 @@ impl From<WorldObject> for String {
     }
 }
 
+impl ItemType {
+    pub fn is_draggable(&self) -> bool {
+        matches!(self, ItemType::Fire)
+    }
+}
+
 impl WorldObject {
     pub fn spawn(
         self,

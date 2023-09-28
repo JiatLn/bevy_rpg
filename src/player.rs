@@ -27,7 +27,7 @@ pub struct Player {
 impl Default for Player {
     fn default() -> Self {
         Player {
-            speed: 80.0,
+            speed: 180.0,
             arm_len: 50.0,
         }
     }

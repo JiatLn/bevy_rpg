@@ -54,19 +54,16 @@ fn crafting_system(
     mut inventory_query: Query<&mut Inventory>,
 ) {
     for (interaction, crafting_button) in interaction_query.iter() {
-        match *interaction {
-            Interaction::Pressed => {
-                let crafting_index = crafting_button.0;
-                let recipe = &crafting_book.craftable[crafting_index];
-                let mut inventory = inventory_query.single_mut();
-                if recipe.can_craft(&inventory) {
-                    info!("crafted: {:?} × 1", recipe.preducts);
-                    cost_and_craft(&mut inventory, recipe);
-                } else {
-                    info!("not enough to crafting the {:?}", recipe.preducts);
-                }
+        if *interaction == Interaction::Pressed {
+            let crafting_index = crafting_button.0;
+            let recipe = &crafting_book.craftable[crafting_index];
+            let mut inventory = inventory_query.single_mut();
+            if recipe.can_craft(&inventory) {
+                info!("crafted: {:?} × 1", recipe.preducts);
+                cost_and_craft(&mut inventory, recipe);
+            } else {
+                info!("not enough to crafting the {:?}", recipe.preducts);
             }
-            _ => (),
         }
     }
 }
